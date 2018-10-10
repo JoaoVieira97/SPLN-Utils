@@ -6,27 +6,33 @@ import re
 import sys
 
 # List of possible accentuations for each vogal
-a_accent = r'[àáãâ]'
-e_accent = r'[éèê]'
-i_accent = r'[íìî]'
-o_accent = r'[óòôõ]'
-u_accent = r'[úùû]'
+a_accent = r'[àáãâÀÁÃÂ]'
+e_accent = r'[éèêÉÈÊ]'
+i_accent = r'[íìîÍÌÎ]'
+o_accent = r'[óòôõÓÒÔÕ]'
+u_accent = r'[úùûÚÙÛ]'
 
 replacement = {
-		'a':a_accent,
-		'e':e_accent,
-		'i':i_accent,
-		'o':o_accent,
-		'u':u_accent	
+		a_accent:'aA',
+		e_accent:'eE',
+		i_accent:'iI',
+		o_accent:'oO',
+		u_accent:'uU'	
 	}
 
 def remove_accents(text):
-	text = re.sub(replacement['a'], 'a', text)
-	text = re.sub(replacement['e'], 'e', text)
-	text = re.sub(replacement['i'], 'i', text)
-	text = re.sub(replacement['o'], 'o', text)
-	text = re.sub(replacement['u'], 'u', text)
-	return text
+	res=""
+
+	for char in text:
+		for regex in replacement:
+			if(re.match(regex, char)):
+				if(char.isupper()):
+					char=replacement[regex][1]
+				else:
+					char=replacement[regex][0]
+				break
+		res+=char
+	return res
 
 if(len(sys.argv)<=1):
 	inp = input();
@@ -34,5 +40,5 @@ if(len(sys.argv)<=1):
 else:
 	for file in sys.argv[1:]:
 		f = open(file, 'r')
-		print("------------ " + file + " ------------ ") 
+		print("------------ " + file + " ------------ ")
 		print(remove_accents(f.read()))
