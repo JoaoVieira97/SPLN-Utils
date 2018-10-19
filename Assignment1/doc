@@ -1,0 +1,23 @@
+Help on module assignment_1:
+
+NAME
+    assignment_1 - Convert text to ASCII.
+
+FILE
+    /Users/miguelq/Documents/College/Masters/ScriptingInNaturalLanguageProcessing/SPLN-Utils/Assignment1/assignment_1.py
+
+DESCRIPTION
+    Write a program that reads unicode text as input and converts
+    it to ASCII text, removing accents and other non-ASCII characters,
+    keep the case.
+
+FUNCTIONS
+    remove_accents(text)
+
+DATA
+    __author__ = 'Joao Vieira and Miguel Quaresma'
+
+AUTHOR
+    Joao Vieira and Miguel Quaresma
+
+
