@@ -1,0 +1,8 @@
+# macOS
+**/._*
+**/.DS_Store
+
+
+**/*.pdf
+**/*.aux
+**/*.class
