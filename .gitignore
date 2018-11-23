@@ -6,3 +6,4 @@
 **/*.pdf
 **/*.aux
 **/*.class
+**/.vscode/**
