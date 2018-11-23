@@ -10,8 +10,9 @@ def iniciarLatex(f_descriptor):
     f_descriptor.write("\\begin{document}\n\n")
 
 def escreverLatex(out, titulo, description, images, paragrafos):
-    out.write("\\section{" + titulo + "}\n\n")
-    out.write("\\textbf{" + limparTexto(description) + "}\n\n")
+    out.write("\\section{" + limparTexto(titulo) + "}\n\n")
+    if description:
+        out.write("\\textbf{" + limparTexto(description[0]) + "}\n\n")
     for image in images:
        adicionar_img(out, image) 
     for paragrafo in paragrafos:
@@ -25,6 +26,9 @@ def adicionar_img(out, img_path):
     out.write('\\end{figure}\n\n')
 
 def limparTexto(texto):
-    t = re.sub(r'<a href=".*".*>(.*)</a>', r'\1', texto)
-    t = re.sub(r'<.*>', ' ', t)
-    return html.unescape(t)
+    t = html.unescape(texto)
+    t = re.sub(r'<a href=".*".*>(.*)</a>', r'\1', t)
+    t = re.sub(r'<[^<]*>', r' ', t)
+    t = re.sub(r'([#$%&{}])', r'\\\1', t)
+    return t
+    #return html.unescape(texto)
