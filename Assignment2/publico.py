@@ -1,11 +1,11 @@
-import requests
 import re
 import sys
 import os
 import html
-import latex_utils
 from urllib.request import urlretrieve
 from unidecode import unidecode
+import requests
+import latex_utils
 
 def obterNoticias(links, out):
     errors_output = open("errors_output.txt", "w")
@@ -48,7 +48,7 @@ def obterNoticias(links, out):
 
         #for paragrafo in paragrafos:
             #print(latex_utils.limparTexto(paragrafo))
-        print("Imprimido no documento!\n---------------------------------")
+        print("Impresso no documento!\n---------------------------------")
         latex_utils.escreverLatex(out, titulo[0], description, img_paths, paragrafos)
 
 
@@ -58,18 +58,17 @@ def pesquisarNoticias(argument, f_descriptor):
     r = requests.get('https://www.publico.pt/pesquisa', params = payload)
     print('URL de pesquisa = ' + r.url + '\n')
     links = re.findall(r'<div class="media-object-section">\s*<a href="(.*)">', r.text)
-    #print(links)
     obterNoticias(links, f_descriptor)
 
-def main():
-    for argument in sys.argv[1:]:
+def scrape(args):
+    for argument in args:
         f_descriptor = open("noticias_"+argument+".tex", "w")
         latex_utils.iniciarLatex(f_descriptor)
         pesquisarNoticias(argument, f_descriptor)
         f_descriptor.write("\n\\end{document}")
         f_descriptor.close()
         os.system("pdflatex noticias_" + argument + ".tex > /dev/null")
-        os.system("evince noticias_" + argument + ".pdf")
+        print("Notícias sobre " + argument + " podem ser encontradas no documento noticias_" + argument+".pdf")
 
 if __name__=="__main__":
     main()

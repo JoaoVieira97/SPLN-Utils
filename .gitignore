@@ -7,3 +7,7 @@
 **/*.aux
 **/*.class
 **/.vscode/**
+**/__pycache__/**
+**/.files/**
+**/*.log
+**/*.tex
