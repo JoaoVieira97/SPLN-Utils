@@ -8,7 +8,7 @@ import latex_utils
 
 def print_usage(util_name):
     print("USAGE\n")
-    print(util_name + " [-phi] [search_term ...]\n\n")
+    print(util_name + " [-ephi] [search_term ...]\n\n")
     print("DESCRIPTION\n")
     print("-e \t Search for news in Expresso")
     print("-p \t Search for news in Publico")
@@ -30,7 +30,7 @@ def scrape(terms, newspaper):
         print("Notícias do " + newspaper + " sobre " + argument + " podem ser encontradas no documento noticias_" + newspaper_topic + ".pdf")
 
 def main():
-    args, remainder = getopt.getopt(sys.argv[1:], "hp")
+    args, remainder = getopt.getopt(sys.argv[1:], "ehp")
     args = dict(args)
     if "-h" in args:
         print_usage(sys.argv[0])
