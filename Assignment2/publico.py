@@ -13,7 +13,8 @@ def obterNoticias(links, out):
         print('A processar ' + link + ' ... ')
 
         link_content = requests.get(link)
-        titulo = re.findall(r'<title>(.*[^\s\n\t\r])\s+\|.*\| PÚBLICO</title>', link_content.text)
+        #titulo = re.findall(r'<title>(.*[^\s\n\t\r])\s+\|.*\| PÚBLICO</title>', link_content.text)
+        titulo = re.findall(r'<h1 class="headline story__headline">\s*(.*[^\s\n\t\r])[^<]*</h1>', link_content.text)
         if not titulo:
             errors_output.write("Can't get title in " + link + "\n")
             print("Ver erros!\n---------------------------------")
@@ -31,6 +32,7 @@ def obterNoticias(links, out):
             print("Ver erros!\n---------------------------------")
             continue
         
+        print(titulo[0])
         tex_folder = ".files/" + ''.join(unidecode(titulo[0]).split(' ')).lower()
         tex_folder = re.sub(r'"',r'',tex_folder)
         os.makedirs(tex_folder, exist_ok=True)
@@ -57,18 +59,5 @@ def pesquisarNoticias(argument, f_descriptor):
     payload = {'query':argument}
     r = requests.get('https://www.publico.pt/pesquisa', params = payload)
     print('URL de pesquisa = ' + r.url + '\n')
-    links = re.findall(r'<div class="media-object-section">\s*<a href="(.*)">', r.text)
+    links = re.findall(r'<div class="media-object-section">[\n\s]*<a href="(.*)">', r.text)
     obterNoticias(links, f_descriptor)
-
-def scrape(args):
-    for argument in args:
-        f_descriptor = open("noticias_"+argument+".tex", "w")
-        latex_utils.iniciarLatex(f_descriptor)
-        pesquisarNoticias(argument, f_descriptor)
-        f_descriptor.write("\n\\end{document}")
-        f_descriptor.close()
-        os.system("pdflatex noticias_" + argument + ".tex > /dev/null")
-        print("Notícias sobre " + argument + " podem ser encontradas no documento noticias_" + argument+".pdf")
-
-if __name__=="__main__":
-    main()
