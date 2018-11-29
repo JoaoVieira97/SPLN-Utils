@@ -17,10 +17,10 @@ def print_usage(util_name):
 
 def scrape(terms, newspaper):
     for argument in terms:
-        newspaper_topic = newspaper + "_" + argument
+        newspaper_topic = newspaper + "_" + '-'.join(argument.split(' '))
         f_descriptor = open("noticias_"+ newspaper_topic + ".tex", "w")
         latex_utils.iniciarLatex(f_descriptor)
-        if(newspaper == "expresso"):
+        if(newspaper == "Expresso"):
             expresso.pesquisarNoticias(argument, f_descriptor)
         else:
             publico.pesquisarNoticias(argument, f_descriptor)
@@ -35,9 +35,9 @@ def main():
     if "-h" in args:
         print_usage(sys.argv[0])
     if "-p" in args:
-        scrape(remainder, "publico")
+        scrape(remainder, "Público")
     if "-e" in args:
-        scrape(remainder, "expresso")
+        scrape(remainder, "Expresso")
 
 if __name__ == "__main__":
     main()

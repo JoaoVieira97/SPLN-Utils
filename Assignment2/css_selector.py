@@ -15,7 +15,6 @@ def cssSelector(texto, css_pattern):
 def find_class(texto, html_class):
     return re.findall(r'<[^>]*class=\"'+html_class+r'\"[^>]*>', texto)
 
-
 def find_id(texto, html_id):
     return re.findall(r'<[^>]*id=\"'+html_id+r'\"[^>]*>', texto)
 
