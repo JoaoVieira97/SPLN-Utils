@@ -12,15 +12,15 @@ def print_usage(util_name):
     print("USAGE\n")
     print(util_name + " [-ephi] [search_term ...]\n\n")
     print("DESCRIPTION\n")
-    print("-e \t Search for news in Expresso")
     print("-p \t Search for news in Publico")
+    print("-e \t Search for news in Expresso (not implemented)")
     print("-h \t Print this menu")
     print("-i \t Interactive mode")
 
 def interactive_usage():
     print("\n\nUsage")
     print("p [search_term ....] : search for news in Publico")
-    print("e [search_term ....] : search for news in Expresso")
+    print("e [search_term ....] : search for news in Expresso (not implemented)")
     print("q : quit")
     print("h or help : print this menu\n\n")
 
