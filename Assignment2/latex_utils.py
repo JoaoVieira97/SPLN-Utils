@@ -16,7 +16,8 @@ def escreverLatex(out, titulo, description, images, paragrafos):
     for image in images:
        adicionar_img(out, image) 
     for paragrafo in paragrafos:
-        out.write(limparTexto(paragrafo) + "\\newline\n")
+        if (paragrafo != "Subscreva gratuitamente as newsletters e receba o melhor da actualidade e os trabalhos mais profundos do Público."):
+            out.write(limparTexto(paragrafo) + "\\newline\n")
     out.write("\n\\newpage\n")
 
 def adicionar_img(out, img_path):
@@ -27,10 +28,10 @@ def adicionar_img(out, img_path):
 
 def limparTexto(texto):
     t = html.unescape(texto)
+    t = re.sub(r'<h2><strong>([^<]*)</strong></h2>', r'\\subsection{\1}\n\n', t)
     t = re.sub(r'<a[^>]*>([^<]*)</a>', r'\1', t)
     t = re.sub(r'<i>([^<]*)</i>', r'\\textit{\1}', t)
     t = re.sub(r'<strong>([^<]*)</strong>', r'\\textbf{\1}', t)
     t = re.sub(r'<[^<]*>', r'', t)
     t = re.sub(r'([#$%&])', r'\\\1', t)
     return t
-    #return html.unescape(texto)

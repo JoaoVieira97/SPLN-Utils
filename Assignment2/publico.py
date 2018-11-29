@@ -14,7 +14,6 @@ def obterNoticias(links, out):
 
         link_content = requests.get(link)
         if(link_content.status_code==200):
-            #titulo = re.findall(r'<title>(.*[^\s\n\t\r])\s+\|.*\| PÚBLICO</title>', link_content.text)
             titulo = re.findall(r'<h1 class="headline story__headline">\s*(.*[^\s\n\t\r])[^<]*</h1>', link_content.text)
             if not titulo:
                 errors_output.write("Can't get title in " + link + "\n")
@@ -26,8 +25,12 @@ def obterNoticias(links, out):
                 print("Não foi detetada qualquer descrição. Ver erros!")
             images = re.findall(r'data-media-viewer="(.*)"', link_content.text)
 
-            paragrafos = re.findall(r'<div class="story__body" id="story-body">\s*<p>(.*)\s*</p>', link_content.text)
-            paragrafos = paragrafos + re.findall(r'<p>\s*(.*)\s*</p>.*\s*.*<aside class=".*">', link_content.text)
+            news_body = re.findall(r'<div class="story__body" id="story-body">(.*)</div>\s*<footer class="story__footer" id="story-footer">', link_content.text, re.DOTALL)
+            if not news_body:
+                errors_output.write("Can't get news body in " + link + "\n")
+                print("Ver erros!\n---------------------------------")
+                continue
+            paragrafos = re.findall(r'<p[^>]*>(.*)</p>', news_body[0])
             if not paragrafos:
                 errors_output.write("Can't get text in " + link + "\n")
                 print("Ver erros!\n---------------------------------")
@@ -49,8 +52,6 @@ def obterNoticias(links, out):
                 img_counter+=1
             img_paths=[tex_folder+img_name for img_name in img_paths]
 
-            #for paragrafo in paragrafos:
-                #print(latex_utils.limparTexto(paragrafo))
             print("Impresso no documento!\n---------------------------------")
             latex_utils.escreverLatex(out, titulo[0], description, img_paths, paragrafos)
         else:
