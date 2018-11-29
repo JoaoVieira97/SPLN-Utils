@@ -6,6 +6,7 @@ import expresso
 import publico
 import latex_utils
 import fileinput
+import re
 
 def print_usage(util_name):
     print("USAGE\n")
@@ -49,13 +50,22 @@ def interactive_mode():
         elif line == "q":
             pass
         else:
+            terms = re.findall(r'\'([^\']*)\'', line)
             line = line.split(' ')
-            if line[0] == "e":
-                scrape(line[1:], "expresso")
-            elif line[0] == "p":
-                scrape(line[1:], "publico")
+            if not terms:
+                if line[0] == "e":
+                    scrape(line[1:], "expresso")
+                elif line[0] == "p":
+                    scrape(line[1:], "publico")
+                else:
+                    print("Invalid command! Enter h for usage")
             else:
-                print("Invalid command! Enter h for usage")
+                if line[0] == "e":
+                    scrape(terms, "expresso")
+                elif line[0] == "p":
+                    scrape(terms, "publico")
+                else:
+                    print("Invalid command! Enter h for usage")
 
 def main():
     args, remainder = getopt.getopt(sys.argv[1:], "ehip")

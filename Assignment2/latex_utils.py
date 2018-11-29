@@ -7,6 +7,7 @@ def iniciarLatex(f_descriptor):
     f_descriptor.write("\\usepackage[utf8]{inputenc}\n")
     f_descriptor.write("\\usepackage{graphicx}\n")
     f_descriptor.write("\\usepackage{float}\n")
+    f_descriptor.write("\\usepackage{eurosym}\n")
     f_descriptor.write("\\begin{document}\n\n")
 
 def escreverLatex(out, titulo, description, images, paragrafos):
@@ -34,4 +35,5 @@ def limparTexto(texto):
     t = re.sub(r'<strong>([^<]*)</strong>', r'\\textbf{\1}', t)
     t = re.sub(r'<[^<]*>', r'', t)
     t = re.sub(r'([#$%&])', r'\\\1', t)
+    t = re.sub(r'€', r'\\euro', t)
     return t

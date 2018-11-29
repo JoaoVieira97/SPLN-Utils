@@ -23,7 +23,7 @@ def obterNoticias(links, out):
             if not description:
                 errors_output.write("Can't get description in " + link + "\n")
                 print("Não foi detetada qualquer descrição. Ver erros!")
-            images = re.findall(r'data-media-viewer="(.*)"', link_content.text)
+            images = re.findall(r'data-media-viewer="([^\"]*)"', link_content.text)
 
             news_body = re.findall(r'<div class="story__body" id="story-body">(.*)</div>\s*<footer class="story__footer" id="story-footer">', link_content.text, re.DOTALL)
             if not news_body:
@@ -44,11 +44,17 @@ def obterNoticias(links, out):
             img_counter=0
             img_paths=[]
             for image in images:
-                with open(tex_folder+"/img_"+str(img_counter)+".jpeg", "wb") as im_dump:
-                    r = requests.get(image)
+                r = requests.get(image)
+                img_ct = r.headers.get('content-type')
+                img_type = re.findall(r'image/(.*)', img_ct)
+                if (img_type[0] == "svg+xml"):
+                	errors_output.write("svg image rejected in " + link + "\n")
+                	print("Ver erros!\n")
+                	continue
+                with open(tex_folder+"/img_"+str(img_counter)+"."+img_type[0], "wb") as im_dump:
                     for chunk in r.iter_content(chunk_size=128):
                         im_dump.write(chunk)
-                img_paths.append("/img_"+str(img_counter)+".jpeg")
+                img_paths.append("/img_"+str(img_counter)+"."+img_type[0])
                 img_counter+=1
             img_paths=[tex_folder+img_name for img_name in img_paths]
 
