@@ -8,10 +8,12 @@ def iniciarLatex(f_descriptor):
     f_descriptor.write("\\usepackage{graphicx}\n")
     f_descriptor.write("\\usepackage{float}\n")
     f_descriptor.write("\\usepackage{eurosym}\n")
+    f_descriptor.write("\\usepackage{xcolor}\n")
     f_descriptor.write("\\begin{document}\n\n")
 
-def escreverLatex(out, titulo, description, images, paragrafos):
+def escreverLatex(out, titulo, description, images, paragrafos, data):
     out.write("\\section{" + limparTexto(titulo) + "}\n\n")
+    out.write("\\textcolor{gray}{" + data + "}\\newline\n")
     if description:
         out.write("\\textbf{" + limparTexto(description[0]) + "}\n\n")
     for image in images:

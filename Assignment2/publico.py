@@ -24,7 +24,6 @@ def obterNoticias(links, out):
                 errors_output.write("Can't get description in " + link + "\n")
                 print("Não foi detetada qualquer descrição. Ver erros!")
             images = re.findall(r'data-media-viewer="([^\"]*)"', link_content.text)
-
             news_body = re.findall(r'<div class="story__body" id="story-body">(.*)</div>\s*<footer class="story__footer" id="story-footer">', link_content.text, re.DOTALL)
             if not news_body:
                 errors_output.write("Can't get news body in " + link + "\n")
@@ -35,6 +34,11 @@ def obterNoticias(links, out):
                 errors_output.write("Can't get text in " + link + "\n")
                 print("Ver erros!\n---------------------------------")
                 continue
+            data = re.findall(r'<time[^>]*>(.*)</time>', link_content.text)
+            if not data:
+            	errors_output.write("Can't get date in " + link + "\n")
+            	print("Ver erros!\n---------------------------------")
+            	continue
             
             print(titulo[0])
             tex_folder = ".files/" + ''.join(unidecode(titulo[0]).split(' ')).lower()
@@ -59,7 +63,7 @@ def obterNoticias(links, out):
             img_paths=[tex_folder+img_name for img_name in img_paths]
 
             print("Impresso no documento!\n---------------------------------")
-            latex_utils.escreverLatex(out, titulo[0], description, img_paths, paragrafos)
+            latex_utils.escreverLatex(out, titulo[0], description, img_paths, paragrafos, data[0])
         else:
             print("Não foi possível obter: " + link)
 
