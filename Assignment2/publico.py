@@ -41,7 +41,7 @@ def obterNoticias(links, out):
             	continue
             
             print(titulo[0])
-            tex_folder = ".files/" + ''.join(unidecode(titulo[0]).split(' ')).lower()
+            tex_folder = ".files/" + ''.join(e for e in unidecode(titulo[0]).split(' ') if e.isalnum()).lower()
             tex_folder = re.sub(r'"',r'',tex_folder)
             os.makedirs(tex_folder, exist_ok=True)
 

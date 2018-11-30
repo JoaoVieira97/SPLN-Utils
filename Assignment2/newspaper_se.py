@@ -2,7 +2,6 @@
 import sys
 import os
 import getopt
-import expresso
 import publico
 import latex_utils
 import fileinput
@@ -56,14 +55,14 @@ def interactive_mode():
                 if line[0] == "e":
                     scrape(line[1:], "expresso")
                 elif line[0] == "p":
-                    scrape(line[1:], "publico")
+                    scrape(line[1:], "Público")
                 else:
                     print("Invalid command! Enter h for usage")
             else:
                 if line[0] == "e":
                     scrape(terms, "expresso")
                 elif line[0] == "p":
-                    scrape(terms, "publico")
+                    scrape(terms, "Público")
                 else:
                     print("Invalid command! Enter h for usage")
 

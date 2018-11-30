@@ -36,6 +36,6 @@ def limparTexto(texto):
     t = re.sub(r'<i>([^<]*)</i>', r'\\textit{\1}', t)
     t = re.sub(r'<strong>([^<]*)</strong>', r'\\textbf{\1}', t)
     t = re.sub(r'<[^<]*>', r'', t)
-    t = re.sub(r'([#$%&])', r'\\\1', t)
+    t = re.sub(r'([#$%&@_])', r'\\\1', t)
     t = re.sub(r'€', r'\\euro', t)
     return t
