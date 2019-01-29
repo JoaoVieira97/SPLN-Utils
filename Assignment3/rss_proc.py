@@ -6,17 +6,20 @@ import requests
 import sys, getopt
 import pickle
 
-
 rss_url = "https://blog.filippo.io/rss/"
 
 def refreshDB():
     updated_feed = requests.get(rss_url).content
-    parse_tree = BeautifulSoup(updated_feed, "lxml")
+    parse_tree = BeautifulSoup(updated_feed, "xml")
     news = parse_tree.find_all("item")
-    #TODO: proc news
+    links = [new.find("link").text for new in news]
+    for link in links:
+        procNew(link)
 
-def procRequest():
-    pass
+def procNew(link):
+    soup = BeautifulSoup(requests.get(link).text, "html.parser")
+    title = soup.find('h1')
+    text = soup.find('main','content').find_all('p')
 
 def main():
     args, remainder = getopt.getopt(sys.argv[1:], "r")
@@ -25,7 +28,6 @@ def main():
         refreshDB()
     else:
         procRequest()
-
 
 if __name__ == "__main__":
     main()
