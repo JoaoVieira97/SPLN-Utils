@@ -31,31 +31,26 @@ def procNew(link):
     text = ' '.join([par.text for par in text])
     filename = re.sub(r'\p{punct}', r'', title)
     filename = re.sub(r'\s+', r'_', filename)
-    filename = filename.lower() + '.md'
+    filename = filename.lower() + '.html'
     buildDocIndex(filename, text)
     f =  open(directory + filename,'w')
     
     title = soup.find('h1', 'post-title')
-    f.write('# ' + replaceToMd(str(title)) + '\n')
+    header_template = f'''<!DOCTYPE html>
+        <html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+        <head>
+        <meta charset="utf-8" />
+        <meta name="generator" content="pandoc" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+        <title>{title.text}n</title>
+        <link rel="stylesheet" type="text/css" href="default.css"/>
+        </head>
+        <body>'''
     textsection = soup.find('section','post-content')
-    find = textsection.find_all(["p", "pre", "h2", "h3"])
-    for tag in find:
-        header = re.match(r'h(\d)', tag.name)
-        if header:
-            f.write('#'*int(header[1]) + ' ' + replaceToMd(str(tag)) + '\n')
-        elif tag.name == 'p':
-            f.write(replaceToMd(str(tag)) + '\n')
-        elif tag.name == 'pre':
-            f.write('```\n' + tag.text + '```\n')
-
-def replaceToMd(html):
-    html = re.sub(r'<strong>([^<]+)</strong>', r'__\1__', html) # important text
-    html = re.sub(r'<b>([^<]+)</b>', r'__\1__', html) # bold text
-    html = re.sub(r'<i>([^<]+)</i>', r'*\1*', html) # italic text
-    html = re.sub(r'<em>([^<]+)</em>', r'*\1*', html) # emph text
-    html = re.sub(r'<a href="([^"]+)">([^<]+)</a>', r'[\2](\1)', html) # references
-    html = re.sub(r'<code>([^<]+)</code>', r'`\1`', html) # little code
-    return BeautifulSoup(html, "html.parser").text
+    find = textsection.find_all(["p", "pre", "h2", "h3"], recursive=False)
+    text = '\n'.join([str(tag) for tag in find])
+    f.write(header_template + '\n' + str(title) + '\n' + text + '</body>\n</html>\n')
+    f.close()
 
 def buildDocIndex(filename, text):
     doc_index[filename] = {}
