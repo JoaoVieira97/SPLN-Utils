@@ -8,6 +8,8 @@ import sys, getopt, re
 
 rss_url = "https://blog.filippo.io/rss/"
 
+doc_index = {}
+
 def refreshDB():
     updated_feed = requests.get(rss_url).content
     parse_tree = BeautifulSoup(updated_feed, "xml")
@@ -20,6 +22,10 @@ def procNew(link):
     soup = BeautifulSoup(requests.get(link).text, "html.parser")
     title = soup.find('h1')
     text = soup.find('main','content').find_all('p')
+    buildDocIndex(text)
+
+def buildDocIndex(text):
+    pass
 
 def procRequest(search_query):
     indexer = open("indexer", "rb")
