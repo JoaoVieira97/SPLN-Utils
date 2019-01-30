@@ -1,10 +1,12 @@
+#!/usr/bin/env python3
 from tkinter import *
-import os
-  
+import os, webbrowser
+import regex as re
+import rsspider
+
 class Application:
     def __init__(self, master=None):
-        self.fontePadrao = ("Arial", "20")
-
+        self.results = []
         # --------------------------------------------
 
         self.primeiroContainer = Frame(master)
@@ -45,26 +47,46 @@ class Application:
 
         self.search = Button(self.terceiroContainer, text = "Search", font = ("Calibri", "15"), fg = "black", command = self.searchQuery)
         self.search["width"] = 20
-        self.search.pack(side=RIGHT)
+        self.search.pack()
 
-        self.mensagem_search = Label(self.terceiroContainer, text="", font=("Arial", "12"))
-        self.mensagem_search.pack(side=BOTTOM)
+        self.msg_search = Label(self.terceiroContainer, text="", font=("Arial", "12"))
+        self.msg_search.pack(side=BOTTOM)
+
+        # --------------------------------------------
+
+        self.quartoContainer = Frame(master)
+        self.quartoContainer["padx"] = 20
+        self.quartoContainer["pady"] = 20
+        self.quartoContainer.pack()
+        
+        self.results_label = Label(self.quartoContainer,text="Search Results", font=("Calibri", "18", "bold"))
+        self.results_label.pack()
 
     def refreshFeed(self):
-        cmd = 'python3 rsspider.py -r'
-        os.system(cmd)
+        rsspider.refreshDB()
         self.mensagem_refresh["text"] = "Feed refresh done!"
 
     def searchQuery(self):
+        for prev_res in self.quartoContainer.winfo_children():
+            if isinstance(prev_res, Button):
+                prev_res.destroy()
         query = self.query_string.get()
-        if query == r'\s+':
-            self.mensagem_search["text"] = "Bad query for the search. Try again!"
+        query = re.sub(r'\p{punct}', r'', query)
+        query = list(filter(lambda x: len(x)>0, re.split(r'\s+', query)))       #remove empty query terms
+        if len(query)==0:
+            self.msg_search["text"] = "Bad query for the search. Try again!"
         else:
-            cmd = 'python3 rsspider.py -s ' + query
-            os.system(cmd)
-            self.mensagem_search["text"] = "Search done. Look for your results!"
+            self.results = rsspider.procRequest(query)
+            self.msg_search["text"] = "Search done. Look for your results!"
+            for result in self.results:
+                resfield = Button(self.quartoContainer, text=result, command= lambda : self.openDocument(rsspider.directory+result))
+                resfield.pack()
+    
+    def openDocument(self, filename):
+        webbrowser.open('file://' + os.path.realpath(filename))
 
 root = Tk()
 root.title("RSSpider")
+root.update_idletasks()
 Application(root)
 root.mainloop()

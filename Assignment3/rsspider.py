@@ -24,6 +24,7 @@ def refreshDB():
     index_db = open(index_dump, "wb")
     pickle.dump(doc_index, index_db)
 
+
 def procNew(link):
     soup = BeautifulSoup(requests.get(link).text, "html.parser")
     title = soup.find('h1').text
@@ -43,7 +44,7 @@ def procNew(link):
         <meta name="generator" content="pandoc" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
         <title>{title.text}n</title>
-        <link rel="stylesheet" type="text/css" href="default.css"/>
+        <link rel="stylesheet" type="text/css" href="../default.css"/>
         </head>
         <body>'''
     textsection = soup.find('section','post-content')
@@ -51,6 +52,7 @@ def procNew(link):
     text = '\n'.join([str(tag) for tag in find])
     f.write(header_template + '\n' + str(title) + '\n' + text + '</body>\n</html>\n')
     f.close()
+
 
 def buildDocIndex(filename, text):
     doc_index[filename] = {}
@@ -65,14 +67,12 @@ def buildDocIndex(filename, text):
         doc_index[filename][term] = doc_index[filename][term] / len(terms)
     
 
-
-def procRequest(search_query):
+def procRequest(search_terms):
     indexer = open(index_dump, "rb")
     doc_index = pickle.load(indexer)
     tot_docs = len(doc_index)
     doc_scale = {}
-    search_query = re.split(r'\s+', search_query)
-    for term in search_query:
+    for term in search_terms:
         doc_term = {}
         for doc in doc_index:
             if term in doc_index[doc]:
@@ -81,10 +81,11 @@ def procRequest(search_query):
         for doc in doc_term:
             doc_scale[doc] = doc_scale.get(doc, 0) + idf*doc_term[doc]
     relevant_docs = sorted(doc_scale.keys(), key=doc_scale.get, reverse=True)
-    print(relevant_docs) #Most relevant document (titles)
+    return relevant_docs
+
 
 def main():
-    args, remainder = getopt.getopt(sys.argv[1:], "rs:")
+    args, _ = getopt.getopt(sys.argv[1:], "rs:")
     args = dict(args)
     if "-r" in args:
         refreshDB()
