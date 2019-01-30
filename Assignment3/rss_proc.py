@@ -4,7 +4,8 @@ from bs4 import BeautifulSoup
 from collections import defaultdict, Counter
 import requests
 import pickle
-import sys, getopt, re
+import sys, getopt
+import regex as re
 
 rss_url = "https://blog.filippo.io/rss/"
 
@@ -15,14 +16,42 @@ def refreshDB():
     parse_tree = BeautifulSoup(updated_feed, "xml")
     news = parse_tree.find_all("item")
     links = [new.find("link").text for new in news]
-    for link in links:
-        procNew(link)
+    #for link in links:
+    procNew(links[0])
 
 def procNew(link):
     soup = BeautifulSoup(requests.get(link).text, "html.parser")
-    title = soup.find('h1')
+    title = soup.find('h1').text
     text = soup.find('main','content').find_all('p')
     buildDocIndex(text)
+    filename = re.sub(r'\p{punct}', r'', title)
+    filename = re.sub(r'\s+', r'_', filename)
+    filename = filename.lower() + '.md'
+
+    f = open(filename,'w')
+    
+    text = soup.find('main','content')
+    find = text.find_all(["p", "pre", "h1", "h2", "h3"])
+    for tag in find:
+        if tag.name == 'h1':
+            f.write('# ' + replaceToMd(str(tag)) + '\n')
+        elif tag.name == 'h2':
+            f.write('## ' + replaceToMd(str(tag)) + '\n')
+        elif tag.name == 'h3':
+            f.write('### ' + replaceToMd(str(tag)) + '\n')
+        elif tag.name == 'p':
+            f.write(replaceToMd(str(tag)) + '\n')
+        elif tag.name == 'pre':
+            f.write('```\n' + tag.text + '```\n')
+
+def replaceToMd(html):
+    html = re.sub(r'<strong>([^<]+)</strong>', r'__\1__', html) # important text
+    html = re.sub(r'<b>([^<]+)</b>', r'__\1__', html) # bold text
+    html = re.sub(r'<i>([^<]+)</i>', r'*\1*', html) # italic text
+    html = re.sub(r'<em>([^<]+)</em>', r'*\1*', html) # emph text
+    html = re.sub(r'<a href="([^"]+)">([^<]+)</a>', r'[\2](\1)', html) # references
+    html = re.sub(r'<code>([^<]+)</code>', r'`\1`', html) # little code
+    return BeautifulSoup(html, "html.parser").text
 
 def buildDocIndex(text):
     pass
