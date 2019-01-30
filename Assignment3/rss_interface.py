@@ -14,7 +14,8 @@ class Application:
         self.primeiroContainer.pack()
 
         self.titulo = Label(self.primeiroContainer, text="RSSpider")
-        self.titulo["font"] = ("Comic Sans", "16", "bold")
+        self.titulo["font"] = ("Comic Sans", "18", "bold")
+        self.titulo["fg"] = "red"
         self.titulo.pack()
 
         # --------------------------------------------
@@ -23,7 +24,7 @@ class Application:
         self.segundoContainer["padx"] = 20
         self.segundoContainer.pack()
 
-        self.refresh = Button(self.segundoContainer, text = "Refresh", font = ("Calibri", "20"), fg = "black", command = self.refreshFeed)
+        self.refresh = Button(self.segundoContainer, text = "Refresh", font = ("Calibri", "16"), fg = "black", command= lambda : self.refreshFeed())
         self.refresh["width"] = 20
         self.refresh.pack()
 
@@ -79,7 +80,7 @@ class Application:
             self.results = rsspider.procRequest(query)
             self.msg_search["text"] = "Search done. Look for your results!"
             for result in self.results:
-                resfield = Button(self.quartoContainer, text=result, command= lambda : self.openDocument(rsspider.directory+result))
+                resfield = Button(self.quartoContainer, text=result, font = ("Calibri", "12"), command= lambda : self.openDocument(rsspider.directory+result))
                 resfield.pack()
     
     def openDocument(self, filename):
