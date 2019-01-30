@@ -17,15 +17,16 @@ def refreshDB():
     parse_tree = BeautifulSoup(updated_feed, "xml")
     news = parse_tree.find_all("item")
     links = [new.find("link").text for new in news]
-    #for link in links:
-    procNew(links[0])
+    for link in links:
+        procNew(link)
     index_db = open(index_dump, "wb")
     pickle.dump(doc_index, index_db)
 
 def procNew(link):
     soup = BeautifulSoup(requests.get(link).text, "html.parser")
     title = soup.find('h1').text
-    text = soup.find('main','content').find_all('p')
+    text = soup.find('section','post-content').find_all('p')
+    text = ' '.join([par.text for par in text])
     filename = re.sub(r'\p{punct}', r'', title)
     filename = re.sub(r'\s+', r'_', filename)
     filename = filename.lower() + '.md'
@@ -57,7 +58,8 @@ def replaceToMd(html):
 
 def buildDocIndex(filename, text):
     doc_index[filename] = {}
-    text = re.sub(r'\p{punct}', r'', text).lower()
+    text = re.sub(r'\p{punct}', r'', text)
+    text = text.lower()
     terms = re.split(r'\s+', text)
     
     for term in terms:
