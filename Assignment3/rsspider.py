@@ -8,6 +8,7 @@ import sys, getopt
 import regex as re
 
 rss_url = "https://blog.filippo.io/rss/"
+index_dump = "rsspider.index"
 
 doc_index = {}
 
@@ -18,16 +19,17 @@ def refreshDB():
     links = [new.find("link").text for new in news]
     #for link in links:
     procNew(links[0])
+    index_db = open(index_dump, "wb")
+    pickle.dump(doc_index, index_db)
 
 def procNew(link):
     soup = BeautifulSoup(requests.get(link).text, "html.parser")
     title = soup.find('h1').text
     text = soup.find('main','content').find_all('p')
-    buildDocIndex(text)
     filename = re.sub(r'\p{punct}', r'', title)
     filename = re.sub(r'\s+', r'_', filename)
     filename = filename.lower() + '.md'
-
+    buildDocIndex(filename, text)
     f = open(filename,'w')
     
     text = soup.find('main','content')
@@ -53,11 +55,21 @@ def replaceToMd(html):
     html = re.sub(r'<code>([^<]+)</code>', r'`\1`', html) # little code
     return BeautifulSoup(html, "html.parser").text
 
-def buildDocIndex(text):
-    pass
+def buildDocIndex(filename, text):
+    doc_index[filename] = {}
+    text = re.sub(r'\p{punct}', r'', text).lower()
+    terms = re.split(r'\s+', text)
+    
+    for term in terms:
+        doc_index[filename][term] = doc_index[filename].get(term, 0) + 1
+    
+    for term in doc_index[filename]:
+        doc_index[filename][term] = doc_index[filename][term] / len(terms)
+    
+
 
 def procRequest(search_query):
-    indexer = open("indexer", "rb")
+    indexer = open(index_dump, "rb")
     doc_index = pickle.load(indexer)
     tot_docs = len(doc_index)
     doc_scale = {}
@@ -74,12 +86,12 @@ def procRequest(search_query):
     print(relevant_docs) #Most relevant document (titles)
 
 def main():
-    args, remainder = getopt.getopt(sys.argv[1:], "r")
+    args, remainder = getopt.getopt(sys.argv[1:], "rs:")
     args = dict(args)
     if "-r" in args:
         refreshDB()
     else:
-        procRequest()
+        procRequest(args["-s"])
 
 if __name__ == "__main__":
     main()
