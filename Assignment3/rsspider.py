@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from collections import defaultdict, Counter
 import requests
 import pickle
-import sys, getopt, os
+import sys, getopt, os, math
 import regex as re
 
 rss_url = "https://blog.filippo.io/rss/"
@@ -77,7 +77,10 @@ def procRequest(search_terms):
         for doc in doc_index:
             if term in doc_index[doc]:
                 doc_term[doc] = doc_index[doc][term]
-        idf = len(doc_term)/tot_docs
+        try:
+            idf = math.log(tot_docs/len(doc_term))
+        except ZeroDivisionError:
+            idf = 0
         for doc in doc_term:
             doc_scale[doc] = doc_scale.get(doc, 0) + idf*doc_term[doc]
     relevant_docs = sorted(doc_scale.keys(), key=doc_scale.get, reverse=True)
