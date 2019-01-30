@@ -5,6 +5,7 @@
 
 **/*.pdf
 **/*.aux
+**/*.toc
 **/*.class
 **/.vscode/**
 **/__pycache__/**
