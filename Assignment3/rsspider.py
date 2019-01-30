@@ -4,11 +4,12 @@ from bs4 import BeautifulSoup
 from collections import defaultdict, Counter
 import requests
 import pickle
-import sys, getopt
+import sys, getopt, os
 import regex as re
 
 rss_url = "https://blog.filippo.io/rss/"
 index_dump = "rsspider.index"
+directory = ".files/"
 
 doc_index = {}
 
@@ -17,6 +18,7 @@ def refreshDB():
     parse_tree = BeautifulSoup(updated_feed, "xml")
     news = parse_tree.find_all("item")
     links = [new.find("link").text for new in news]
+    os.makedirs(directory, exist_ok=True)
     for link in links:
         procNew(link)
     index_db = open(index_dump, "wb")
@@ -31,17 +33,16 @@ def procNew(link):
     filename = re.sub(r'\s+', r'_', filename)
     filename = filename.lower() + '.md'
     buildDocIndex(filename, text)
-    f = open(filename,'w')
+    f =  open(directory + filename,'w')
     
-    text = soup.find('main','content')
-    find = text.find_all(["p", "pre", "h1", "h2", "h3"])
+    title = soup.find('h1', 'post-title')
+    f.write('# ' + replaceToMd(str(title)) + '\n')
+    textsection = soup.find('section','post-content')
+    find = textsection.find_all(["p", "pre", "h2", "h3"])
     for tag in find:
-        if tag.name == 'h1':
-            f.write('# ' + replaceToMd(str(tag)) + '\n')
-        elif tag.name == 'h2':
-            f.write('## ' + replaceToMd(str(tag)) + '\n')
-        elif tag.name == 'h3':
-            f.write('### ' + replaceToMd(str(tag)) + '\n')
+        header = re.match(r'h(\d)', tag.name)
+        if header:
+            f.write('#'*int(header[1]) + ' ' + replaceToMd(str(tag)) + '\n')
         elif tag.name == 'p':
             f.write(replaceToMd(str(tag)) + '\n')
         elif tag.name == 'pre':
