@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from collections import defaultdict, Counter
 import requests
 import pickle
-import sys, getopt, os, math
+import os, math
 import regex as re
 
 rss_url = "https://blog.filippo.io/rss/"
@@ -85,15 +85,3 @@ def procRequest(search_terms):
             doc_scale[doc] = doc_scale.get(doc, 0) + idf*doc_term[doc]
     relevant_docs = sorted(doc_scale.keys(), key=doc_scale.get, reverse=True)
     return relevant_docs
-
-
-def main():
-    args, _ = getopt.getopt(sys.argv[1:], "rs:")
-    args = dict(args)
-    if "-r" in args:
-        refreshDB()
-    else:
-        procRequest(args["-s"])
-
-if __name__ == "__main__":
-    main()
