@@ -10,6 +10,7 @@ import regex as re
 rss_url = "https://blog.filippo.io/rss/"
 index_dump = "rsspider.index"
 directory = ".files/"
+base_url = "https://blog.filippo.io"
 
 doc_index = {}
 
@@ -48,11 +49,14 @@ def procNew(link):
         </head>
         <body>'''
     textsection = soup.find('section','post-content')
-    find = textsection.find_all(["p", "pre", "h2", "h3"], recursive=False)
-    text = '\n'.join([str(tag) for tag in find])
+    find = textsection.find_all(["p", "pre", "h2", "h3", "h4", "ul", "ol", "blockquote"], recursive=False)
+    text = '\n'.join([searchImg(str(tag)) for tag in find])
     f.write(header_template + '\n' + str(title) + '\n' + text + '</body>\n</html>\n')
     f.close()
 
+def searchImg(tag):
+    tag = re.sub(r'(<img alt="[^"]+" src=")([^"]+"/>)', r'\1' + base_url + r'\2', tag)
+    return tag
 
 def buildDocIndex(filename, text):
     doc_index[filename] = {}
