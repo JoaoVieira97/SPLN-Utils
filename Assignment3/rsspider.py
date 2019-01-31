@@ -21,12 +21,12 @@ def refreshDB():
     links = [new.find("link").text for new in news]
     os.makedirs(directory, exist_ok=True)
     for link in links:
-        procNew(link)
+        procDoc(link)
     index_db = open(index_dump, "wb")
     pickle.dump(doc_index, index_db)
 
 
-def procNew(link):
+def procDoc(link):
     soup = BeautifulSoup(requests.get(link).text, "html.parser")
     title = soup.find('h1').text
     text = soup.find('section','post-content').find_all('p')
