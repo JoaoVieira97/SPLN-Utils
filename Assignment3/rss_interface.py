@@ -80,7 +80,7 @@ class Application:
             self.results = rsspider.procRequest(query)
             self.msg_search["text"] = "Search done. Look for your results!"
             for result in self.results:
-                resfield = Button(self.quartoContainer, text=result, font = ("Calibri", "12"), command= lambda : self.openDocument(rsspider.directory+result))
+                resfield = Button(self.quartoContainer, text=result, font = ("Calibri", "12"), command= lambda result=result: self.openDocument(rsspider.directory+result))
                 resfield.pack()
     
     def openDocument(self, filename):
